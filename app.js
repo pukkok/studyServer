@@ -32,7 +32,9 @@ app.use('/user/:id', (req, res, next)=>{ // 라우터가 일치할때 get, post,
     next()
 },
 (req, res, next)=> {
-    console.log('Request URL :', req.originalUrl) // req.originalUrl : 사용자가 브라우저에서 접속한 URL 주소
+    console.log('URL :', req.url) // req.originalUrl : 사용자가 브라우저에서 접속한 URL 주소
+    console.log('base URL :', req.baseUrl) // req.originalUrl : 사용자가 브라우저에서 접속한 URL 주소
+    console.log('origin URL :', req.originalUrl) // req.originalUrl : 사용자가 브라우저에서 접속한 URL 주소
     next()
 })
 
