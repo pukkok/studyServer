@@ -54,4 +54,16 @@ DB 데이터 + 템플릿 엔진 => html 생성 => 브라우저로 전송
 CSR 클라이언트 사이드 렌더링 : 브라우저쪽에서 HTML 파일 생성 (자바스크립트로 HTML 생성)
 DB JSON문자열 + JSX 엘리먼트 => HTML 파일 생성
 
+서버 <- 요청 브라우저
+    응답 ->
 
+요청
+request header
++ request body = 페이로드(pay load)
+
+응답
+response header
++ response body
+
+header : 메타데이터 
+body : 실제 전송되는 데이터
