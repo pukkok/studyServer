@@ -1,7 +1,7 @@
 const express = require('express')
 const tester = express()
 const port = 3005
-const datas = require('./users.json')
+const datas = require('../users.json')
 const newDatas = JSON.parse(JSON.stringify(datas))
 
 tester.get('/users', (req, res, next)=>{    

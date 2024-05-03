@@ -8,19 +8,25 @@ const BookSchema = new Schema({
     },
     summary : {
         type : String,
-        required : false,
-        default: ''
+        required : false
     },
     release : {
         type : String,
-        required : true
+        required : false
     },
     author : {
         type : String,
-        required : true
+        required : false
     }
 })
 
 const Book = mongoose.model('Book', BookSchema)
 
 module.exports = Book
+
+const book = new Book({
+    title : '해리포터',
+    author : '조앤 케이 롤링'
+})
+
+book.save().then(()=>console.log('북 등록'))

@@ -34,7 +34,7 @@ app.use(express.json())
 
 /** 시작 */
 // const Book = require('./src/models/Book')
-const User = require('./src/models/User')
+const User = require('../src/models/User')
 
 
 app.get('/', (req, res)=>{
