@@ -6,8 +6,32 @@
     <title>Document</title>
 </head>
 <body>
-    <div></div>
-    <div></div>
+    <form>
+        <label for="id">
+            <span>ID</span>
+            <input id="id" type="text" placeholder="ID">
+        </label>
+        <label for="pw">
+            <span>password</span>
+            <input id="pw" type="password" placeholder="password">
+        </label>
+        <button class="login-btn">로그인</button>
+    </form>
+    <div>
+        <button class="register">회원가입</button>
+        <form class="register-form">
+            <label for="r-id">
+                <span>ID</span>
+                <input id="r-id" type="text" placeholder="ID">
+            </label>
+            <label for="r-pw">
+                <span>password</span>
+                <input id="r-pw" type="password" placeholder="password">
+            </label>
+            <button>완료</button>
+        </form>
+
+    </div>
     <script src="app.js"></script>
 </body>
 </html>
