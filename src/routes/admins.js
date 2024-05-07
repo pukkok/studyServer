@@ -11,16 +11,6 @@ const router = express.Router()
 // 기존도서 정보 변경 put
 // 도서목록 조회 get
 
-router.get('/book', expressAsyncHandler( async(req, res, next)=>{
-    const books = await Book.find({})
-
-    if(!books){
-        res.status(404).json({code: 404, msg: '책 조회를 실패했습니다'})
-    }else{
-        res.json(books)
-    }
-}))
-
 router.post('/book', expressAsyncHandler( async(req, res, next) => {
     const book = new Book({
         title: req.body.title,
@@ -73,9 +63,3 @@ router.delete('/book/:id', expressAsyncHandler( async(req, res, next) => {
 }))
 
 module.exports = router
-
-// {
-//  "title" : "이런책",
-//  "release" : "2020/01/23",
-//  "author" : "이러니"
-// }
