@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 const { Schema } = mongoose
 
+let firstISBN = '000-00-00000-000-0'
+
 const BookSchema = new Schema({
     title : {
         type : String,
@@ -18,6 +20,11 @@ const BookSchema = new Schema({
     author : {
         type : String,
         required : true
+    },
+    isbn : {
+        type: String,
+        required : false,
+        unique : true
     }
 })
 

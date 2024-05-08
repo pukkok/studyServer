@@ -15,7 +15,9 @@ router.post('/book', expressAsyncHandler( async(req, res, next) => {
     const book = new Book({
         title: req.body.title,
         release: req.body.release,
-        author: req.body.author
+        author: req.body.author,
+        summary : req.body.summary,
+        isbn : req.body.isbn
     })
 
     const newBook = await book.save()
