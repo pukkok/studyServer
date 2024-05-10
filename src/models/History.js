@@ -1,15 +1,15 @@
 const mongoose = require('mongoose')
+const moment = require('moment')
+
 const { Schema } = mongoose
 const { Types : {ObjectId} } = Schema
 
 const historySchema = new Schema({
     loanTime : {
-        type : Date,
-        require : false
+        type : Date
     },
     returnTime : {
-        type : Date,
-        require : false
+        type : Date
     },
     bookId : {
         type : ObjectId,
@@ -20,7 +20,7 @@ const historySchema = new Schema({
         ref : 'User'
     },
     deadLine : {
-        type : Date
+        type : String
     },
     isReturn : {
         type : Boolean,
@@ -30,6 +30,10 @@ const historySchema = new Schema({
         type : String,
         require: true
     }
+})
+
+historySchema.virtual('end').get(function(){
+    return moment(this.deadLine).locale('ko').fromNow()
 })
 
 const History = mongoose.model('History', historySchema)

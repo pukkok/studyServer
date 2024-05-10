@@ -25,3 +25,23 @@
     gap: 10px;
 }
 
+.book-list{
+    margin-top: 30px;
+    display: flex;
+    gap: 5px;
+}
+.book-list div{
+    border: solid 1px blue;
+    padding: 10px;
+}
+
+.history{
+    margin-top: 30px;
+    display: flex;
+    gap: 5px;
+}
+
+.history div{
+    border: solid 1px orange;
+    padding: 10px;
+}
