@@ -28,7 +28,8 @@ router.post('/book', expressAsyncHandler( async(req, res, next) => {
         const { title, summary, release, author } = newBook
         return res.json({
             code: 200,
-            title, summary, release, author
+            title, summary, release, author,
+            msg : '도서 등록 완료'
         })
     }
 }))
