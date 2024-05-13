@@ -14,9 +14,6 @@ const generateRandomDate = (from, to) => { // from 시작하는 날짜, to 끝�
     return new Date(from.getTime() + Math.random() * (to.getTime() - from.getTime()))
 }
 
-// getTime() : 1714662000000 => 계산용
-// console.log(generateRandomDate(new Date(2024, 0, 2), new Date()))
-
 // 배열에서 랜덤값 선택
 const selectRandomValue = (arr) => {
     return arr[Math.floor(Math.random()*arr.length)]
@@ -49,7 +46,7 @@ const createBooks = async (n, books) => {
             summary: `${generateRandomeString(100)}`,
             author: generateRandomeStringKR(3),
             release: `${selectRandomNumber(2024, 2000)}-${selectRandomNumber(12)}-${selectRandomNumber(30)}`,
-            isbn: `978-13-${selectRandomNumber(99999)}-${selectRandomNumber(999)}-${selectRandomNumber(9)}`,
+            isbn: `978-13-${selectRandomNumber(99999, 10000)}-${selectRandomNumber(999, 100)}-${selectRandomNumber(9)}`,
             category: selectRandomValue(category)
         })
         books.push(await book.save())

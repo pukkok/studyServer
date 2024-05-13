@@ -48,7 +48,23 @@ router.post('/book', expressAsyncHandler( async(req, res, next) => {
 }))
 // 연장하기
 router.put('/book/:isbn', expressAsyncHandler( async (req, res, next)=> {
+    const book = await Book.findOne({ isbn : req.params.isbn })
 
+    if(!book){
+        return res.status(404).json({ code: 404, msg: '도서를 다시 확인해 주세요'})
+    }else{
+        const renewBook = await History.findOne(
+            { bookId : book._id, isReturn : false }
+        )
+        const { deadLine } = renewBook
+        let newDeadLine = moment(deadLine).add(7, 'days')
+        
+        if(renewBook){
+            return res.json({ code: 200, msg: '7일 연장되었습니다.'})
+        }else{
+            return res.json({ code: 400, msg: '연장이 불가능한 도서입니다.' })
+        }
+    }
 }))
 
 // 반납하기
@@ -56,7 +72,7 @@ router.delete('/book/:isbn', expressAsyncHandler( async(req, res, next) => {
     const book = await Book.findOne({ isbn : req.params.isbn })
 
     if(!book){
-        return res.status(404).json({ code: 404, msg: '도서를 다시확인해 주세요.' })
+        return res.status(404).json({ code: 404, msg: '도서를 다시 확인해 주세요.' })
     }else{
         await User.findOneAndUpdate(
             { _id : req.user._id},
