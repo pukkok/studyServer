@@ -17,4 +17,23 @@ router.get('/log', expressAsyncHandler( async(req, res, next) => {
     res.json( mappingLog )
 }))
 
+// 통계 기록
+router.get('/stat', expressAsyncHandler( async(req, res, next) => {
+    const userLogs = await History.find({userId : req.user._id})
+    .populate('bookId', ['category', '-_id'])
+    const categories = {}
+
+    userLogs.forEach(log => {
+        const category = log.bookId.category
+        if(categories[category]){
+            categories[category]++
+        }else{
+            categories[category] = 1
+        }
+    })
+
+    res.json(categories)
+    
+}))
+
 module.exports = router

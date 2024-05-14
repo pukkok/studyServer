@@ -1,5 +1,6 @@
 const express = require('express')
 const User = require('../models/User')
+const History = require('../models/History')
 const expressAsyncHandler = require('express-async-handler')
 const { generateToken, isAuth } = require('../../auth')
 const { validationResult, oneOf } = require('express-validator')
@@ -117,6 +118,9 @@ expressAsyncHandler( async(req, res, next) => {
 router.delete('/', isAuth,
 expressAsyncHandler( async(req, res, next) => {
     const user = await User.findByIdAndDelete(req.user._id)
+
+    await History.deleteMany({userId : req.user._id})
+
     if(!user){
         res.status(404).json({ code: 404, msg: '유저를 찾을 수 없습니다.'})
     }else{

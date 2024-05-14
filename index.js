@@ -1,10 +1,14 @@
 const express = require('express')
 const app = express()
 const port = 4002
-
+const schedule = require('node-schedule')
 const cors = require('cors')
 const logger = require('morgan')
 const mongoose = require('mongoose')
+const { limitUsage } = require('./trafficLimmiter')
+
+const History = require('./src/models/History')
+const User = require('./src/models/User')
 
 const corsOptions = {
     origin: '*',
@@ -52,6 +56,29 @@ app.use((err, req, res, next)=>{
     res.status(500).json('서버 에러 발생!')
 })
 
-app.listen(port, ()=>{
+app.listen(port, async ()=>{
+    
+    schedule.scheduleJob('5 * 12 * * *', async ()=>{
+        const logs = await History.find({})
+        .populate('bookId', ['title','isbn', '-_id'])
+
+        logs.forEach( async log => {
+            
+            let {userId, bookId} = log
+            const now = new Date()
+            if(log.deadLine < now){
+                log.isReturn = true
+                log.returnTime = now
+                log.work = '반납'
+                
+                log.save()
+
+                await User.findOneAndUpdate(
+                    { _id : userId },
+                    { $pull : { borrowedBook : bookId }}
+                )
+            }
+        })
+    })
     console.log(`${port}번 연결`)
 })

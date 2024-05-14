@@ -75,4 +75,22 @@ router.delete('/book/:isbn', expressAsyncHandler( async(req, res, next) => {
 
 }))
 
+// 통계 보기
+router.get('/stat', expressAsyncHandler( async(req, res, next) =>{
+    const books = await Book.find({})
+
+    const categories = {}
+
+    books.forEach(book => {
+        const category = book.category
+        if(categories[category]){
+            categories[category]++
+        }else{
+            categories[category] = 1
+        }
+    })
+    
+    res.json(categories)
+}))
+
 module.exports = router

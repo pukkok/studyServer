@@ -4,7 +4,7 @@ const User = require('../models/User')
 const Book = require('../models/Book')
 const History = require('../models/History')
 const expressAsyncHandler = require('express-async-handler')
-
+const { limitUsage } = require('../../trafficLimmiter')
 const router = express.Router()
 
 //책 조회하기
@@ -20,7 +20,7 @@ router.get('/book', expressAsyncHandler( async(req, res, next)=>{
 }))
 
 // 빌리기
-router.post('/book', expressAsyncHandler( async(req, res, next) => {
+router.post('/book', limitUsage, expressAsyncHandler( async(req, res, next) => {
     
     const book = await Book.findOne({ isbn : req.body.isbn })
     const user = await User.findOne({ _id : req.user._id })
@@ -62,6 +62,7 @@ router.put('/book/:isbn', expressAsyncHandler( async (req, res, next)=> {
             }
         )
         log.deadLine = moment(log.deadLine).add(7, 'days')
+        log.work = '연장' 
 
         const success = await log.save()
         
@@ -119,7 +120,11 @@ router.get('/borrowed-book', expressAsyncHandler( async(req, res, next) => {
     if(!user){
         res.status(401).json({ code: 401, msg: '아이디를 확인해 주세요'})
     }else{
-        res.json(books)
+        if(books.includes(null)){
+            res.status(404).json({ code: 404, msg: '대여한 도서가 없습니다.'})
+        }else{
+            res.json(books)
+        }
     }
 
 }))
