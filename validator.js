@@ -46,10 +46,6 @@ const validateUserPassword = () => {
             .withMessage('패스워드가 일치하지 않습니다.')
 }
 
-const validateAddBook = () => {
-   
-}
-
 module.exports = ({
     validateUserName,
     validateUserEmail,

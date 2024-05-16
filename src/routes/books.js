@@ -34,11 +34,9 @@ router.post('/book', expressAsyncHandler( async(req, res, next) => {
             user.borrowedBook.push(book._id)
             
             const log = new History({
-                loanTime : moment(),
-                deadLine : moment().add(14, 'days'),
                 userId : user._id,
                 bookId : book._id,
-                work : '책 대여'
+                work : '대여'
             })
             
             user.save()
@@ -48,29 +46,38 @@ router.post('/book', expressAsyncHandler( async(req, res, next) => {
         }
     }
 }))
+// 연장하기
+router.put('/book/:isbn', expressAsyncHandler( async (req, res, next)=> {
+
+}))
 
 // 반납하기
-router.delete('/book/:title', expressAsyncHandler( async(req, res, next) => {
+router.delete('/book/:isbn', expressAsyncHandler( async(req, res, next) => {
     const book = await Book.findOne({ isbn : req.params.isbn })
-    
+
     if(!book){
-        return res.status(404).json({ code: 404, msg: '제목을 다시확인해 주세요.' })
+        return res.status(404).json({ code: 404, msg: '도서를 다시확인해 주세요.' })
     }else{
         await User.findOneAndUpdate(
             { _id : req.user._id},
             { $pull : { borrowedBook : book._id }}
         )
 
-        const log = new History({
+        const returnBook = await History.findOneAndUpdate(
+            { bookId : book._id, isReturn : false},
+            {
             returnTime : moment(),
             userId : req.user._id,
             bookId : book._id,
-            work : '책 반납',
+            work : '반납',
             isReturn : true
         })
-        log.save()
-
-        res.json({code: 200, msg : `${req.params.title}이 반납되었습니다.`})
+       
+        if(returnBook){
+            return res.json({code: 200, msg : `${book.title}이(가) 반납되었습니다.`})
+        }else{
+            return res.json({code: 400, msg : '이미 반납된 도서입니다.'})
+        }
     }
 
 }))
@@ -100,9 +107,9 @@ router.get('/borrowed-book/:isbn', expressAsyncHandler( async(req, res, next) =>
     const history = await History.findOne({userId:req.user._id, bookId:book._id})
 
     let { loanTime, returnTime, deadLine, work, isReturn, end } = history
-    loanTime = moment(loanTime).format('YYYY-MM-DD')
-    returnTime = moment(returnTime).format('YYYY-MM-DD')
-    deadLine = moment(deadLine).format('YYYY-MM-DD')
+    loanTime = moment(loanTime).format('LL')
+    returnTime = moment(returnTime).format('LL')
+    deadLine = moment(deadLine).format('LL')
 
     if(!user){
         res.status(401).json({ code: 401, msg: '아이디를 확인해 주세요'})

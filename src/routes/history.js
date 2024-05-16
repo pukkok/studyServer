@@ -1,21 +1,20 @@
 const express = require('express')
-const User = require('../models/User')
-const Book = require('../models/Book')
 const History = require('../models/History')
 const expressAsyncHandler = require('express-async-handler')
 
 const router = express.Router()
 
-
 router.get('/log', expressAsyncHandler( async(req, res, next) => {
-    const log = await History.find({})
+    const log = await History.find({userId : req.user._id})
     .populate('userId', ['name', '-_id'])
-    .populate('bookId', ['title', '-_id'])
+    .populate('bookId', ['title','isbn', '-_id'])
 
-    // log.map()
-    console.log(log)
-
-    res.json({'로그' : log })
+    const mappingLog = log.map(x=> {
+        let {bookId, deadLineFormat, isReturn, loanTimeFormat, returnTimeFormat, work, end} = x
+        const { title, isbn } = bookId
+        return {title, isbn, deadLineFormat, isReturn, loanTimeFormat, returnTimeFormat, work, end}
+    })
+    res.json( mappingLog )
 }))
 
 module.exports = router

@@ -25,6 +25,10 @@ const BookSchema = new Schema({
         type: String,
         required : false,
         unique : true
+    },
+    category : {
+        type: String,
+        required : true
     }
 })
 
