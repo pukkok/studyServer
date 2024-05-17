@@ -35,7 +35,7 @@ router.post('/book', expressAsyncHandler( async(req, res, next) => {
             
             const log = new History({
                 userId : user._id,
-                bookId : book._id,
+                bookId : book._id,  
                 work : '대여'
             })
             
@@ -46,6 +46,7 @@ router.post('/book', expressAsyncHandler( async(req, res, next) => {
         }
     }
 }))
+
 // 연장하기
 router.put('/book/:isbn', expressAsyncHandler( async (req, res, next)=> {
     const book = await Book.findOne({ isbn : req.params.isbn })
@@ -53,17 +54,32 @@ router.put('/book/:isbn', expressAsyncHandler( async (req, res, next)=> {
     if(!book){
         return res.status(404).json({ code: 404, msg: '도서를 다시 확인해 주세요'})
     }else{
-        const renewBook = await History.findOne(
-            { bookId : book._id, isReturn : false }
-        )
-        const { deadLine } = renewBook
-        let newDeadLine = moment(deadLine).add(7, 'days')
-        
-        if(renewBook){
-            return res.json({ code: 200, msg: '7일 연장되었습니다.'})
-        }else{
+        const isBooks = await History.find({ bookId : book._id })
+        if(isBooks.length>1){ // 같은 책을 2번이상 대여한 히스토리가 있는 경우
             return res.json({ code: 400, msg: '연장이 불가능한 도서입니다.' })
+        }else{
+
+            // 
+            // const renewBook = await History.findOne(
+            //     { bookId : book._id, isReturn : false }
+            // )
+            // const { deadLine } = renewBook
+            
+            // let newDeadLine = moment(deadLine).add(7, 'days')
+
+            const renewBook = await History.findOneAndUpdate(
+                { bookId : book._id, isReturn : false },
+                { $set : { deadLine : moment(`${$deadLine}`).add(7, 'days')}}
+            )
+            console.log(renewBook)
+            if(renewBook){
+                return res.json({ code: 200, msg: '7일 연장되었습니다.'})
+            }else{
+                return res.json({ code: 400, msg: '연장이 불가능한 도서입니다.' })
+            }
         }
+
+        
     }
 }))
 
@@ -80,7 +96,7 @@ router.delete('/book/:isbn', expressAsyncHandler( async(req, res, next) => {
         )
 
         const returnBook = await History.findOneAndUpdate(
-            { bookId : book._id, isReturn : false},
+            { bookId : book._id, isReturn : false },
             {
             returnTime : moment(),
             userId : req.user._id,
