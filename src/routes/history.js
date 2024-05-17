@@ -10,9 +10,9 @@ router.get('/log', expressAsyncHandler( async(req, res, next) => {
     .populate('bookId', ['title','isbn', '-_id'])
 
     const mappingLog = log.map(x=> {
-        let {bookId, deadLineFormat, isReturn, loanTimeFormat, returnTimeFormat, work, end} = x
+        let {_id, bookId, deadLineFormat, isReturn, loanTimeFormat, returnTimeFormat, work, end} = x
         const { title, isbn } = bookId
-        return {title, isbn, deadLineFormat, isReturn, loanTimeFormat, returnTimeFormat, work, end}
+        return {_id, title, isbn, deadLineFormat, isReturn, loanTimeFormat, returnTimeFormat, work, end}
     })
     res.json( mappingLog )
 }))

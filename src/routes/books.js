@@ -54,30 +54,23 @@ router.put('/book/:isbn', expressAsyncHandler( async (req, res, next)=> {
     if(!book){
         return res.status(404).json({ code: 404, msg: '도서를 다시 확인해 주세요'})
     }else{
-        const isBooks = await History.find({ bookId : book._id })
-        if(isBooks.length>1){ // 같은 책을 2번이상 대여한 히스토리가 있는 경우
-            return res.json({ code: 400, msg: '연장이 불가능한 도서입니다.' })
-        }else{
-
-            // 
-            // const renewBook = await History.findOne(
-            //     { bookId : book._id, isReturn : false }
-            // )
-            // const { deadLine } = renewBook
-            
-            // let newDeadLine = moment(deadLine).add(7, 'days')
-
-            const renewBook = await History.findOneAndUpdate(
-                { bookId : book._id, isReturn : false },
-                { $set : { deadLine : moment(`${$deadLine}`).add(7, 'days')}}
-            )
-            console.log(renewBook)
-            if(renewBook){
-                return res.json({ code: 200, msg: '7일 연장되었습니다.'})
-            }else{
-                return res.json({ code: 400, msg: '연장이 불가능한 도서입니다.' })
+        const log = await History.findOne(
+            {
+                bookId: book._id,
+                userId: req.user._id,
+                isReturn: false 
             }
+        )
+        log.deadLine = moment(log.deadLine).add(7, 'days')
+
+        const success = await log.save()
+        
+        if(success){
+            return res.json({ code: 200, msg: '7일 연장되었습니다.'})
+        }else{
+            return res.json({ code: 400, msg: '연장이 불가능한 도서입니다.' })
         }
+        
 
         
     }
@@ -134,20 +127,22 @@ router.get('/borrowed-book', expressAsyncHandler( async(req, res, next) => {
 // 대출 도서 상세 보기
 router.get('/borrowed-book/:isbn', expressAsyncHandler( async(req, res, next) => {
     const user = await User.findOne({ _id: req.user._id })
-    const book = await Book.findOne({ isbn: req.params.isbn })
-
-    const history = await History.findOne({userId:req.user._id, bookId:book._id})
-
-    let { loanTime, returnTime, deadLine, work, isReturn, end } = history
-    loanTime = moment(loanTime).format('LL')
-    returnTime = moment(returnTime).format('LL')
-    deadLine = moment(deadLine).format('LL')
+    .populate('borrowedBook', ['isbn', '-_id'])
 
     if(!user){
         res.status(401).json({ code: 401, msg: '아이디를 확인해 주세요'})
     }else{
-        
-        res.json({loanTime, returnTime, deadLine, work, isReturn, end})
+        let isBooks = user.borrowedBook.filter(data => {
+            return data.isbn === req.params.isbn
+        })
+
+        if(isBooks.length>0){
+            const book = await Book.findOne({ isbn: req.params.isbn })
+            const {title, author, summary, isbn, release, category } = book
+            res.json({title, author, summary, isbn, release, category })
+        }else{
+            res.json({code: 404, msg: '대출 목록이 없습니다.'})
+        }
     }
 }))
 
